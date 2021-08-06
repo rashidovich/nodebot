@@ -11,6 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NodeBotServer.Config;
+using NodeBotServer.Middlewares;
+using Serilog;
+using Serilog.Sinks.SystemConsole;
 
 namespace NodeBotServer
 {
@@ -26,6 +30,9 @@ namespace NodeBotServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigureLogging();
+
+            services.AddSingleton(BotConfig.Bind(Configuration));
             services.AddControllers();
         }
 
@@ -43,6 +50,7 @@ namespace NodeBotServer
             }
 
             app.UseHttpsRedirection();
+            app.UseMiddleware<AuthMiddleware>();
 
             app.UseRouting();
 
@@ -52,6 +60,18 @@ namespace NodeBotServer
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private void ConfigureLogging()
+        {
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .WriteTo.File("log-.txt",
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+                    rollOnFileSizeLimit: true, retainedFileCountLimit: 15, rollingInterval: RollingInterval.Day)
+                .CreateLogger();
         }
     }
 }

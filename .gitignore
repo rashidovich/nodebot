@@ -1,0 +1,5 @@
+.vs/*
+.vscode/*
+/NodeBotServer/.vs/NodeBotServer/v16/Server/sqlite3
+/NodeBotServer/bin/Debug/netcoreapp3.1
+/NodeBotServer/obj

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NodeBotServer.Config;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
@@ -38,6 +37,9 @@ namespace NodeBotServer.Middlewares
             {
                 Log.Error("Authentication error.");
             }
+
+            context.Response.StatusCode = 403;
+            await _next(context);
 
             Log.Warning("Unauthorized call.");
         }

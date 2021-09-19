@@ -1,30 +1,21 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Serilog;
 
-namespace NodeBotServer.Controllers
+namespace NodeBotServer.Services
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ServiceController : ControllerBase
+    public class Executer
     {
-        [HttpPost]
-        public async Task<IActionResult> Execute(string command)
-        {
-            Log.Information("Entering method.");
-
-            var result = await Executer(command);
-            return Ok(result);
-        }
-
-        private Task<string> Executer(string cmd)
+        internal static Task<string> Run(string cmd)
         {
             if (string.IsNullOrWhiteSpace(cmd))
                 return Task.FromResult("");
 
             var escapedArgs = cmd.Replace("\"", "\\\"");
+
+            Log.Information($"Executing: '{escapedArgs}'");
+
             var source = new TaskCompletionSource<string>();
 
             var process = new Process

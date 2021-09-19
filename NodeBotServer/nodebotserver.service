@@ -1,10 +1,12 @@
 [Unit]
 Description=ASP.NET Core web template
+After=network.target
 
 [Service]
 Type=notify
 WorkingDirectory=/home/nodebot
-ExecStart=/usr/bin/dotnet run /home/nodebot/nodebotserver
+ExecStart=/usr/bin/dotnet run --project /home/nodebot/nodebotserver
+ExecReload=/bin/kill -HUP $MAINPID
 SyslogIdentifier=nodebotserver
 
 # Use your username to keep things simple, for production scenario's I recommend a dedicated user/group.
@@ -19,7 +21,7 @@ Restart=always
 RestartSec=5
 
 KillSignal=SIGINT
-Environment=ASPNETCORE_ENVIRONMENT=stage
+Environment=ASPNETCORE_ENVIRONMENT=production
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 
 # This environment variable is necessary when dotnet isn't loaded for the specified user.
